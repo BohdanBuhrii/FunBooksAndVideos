@@ -6,10 +6,15 @@ using EShop.Repositories.Abstract;
 
 namespace EShop.Repositories
 {
+  /// <summary>
+  /// Implement CRUD operations with products.  
+  /// </summary>
   public class ProductsRepository : RepositoryBase, IProductsRepository
   {
+    /// <inheritdoc/>
     public ProductsRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory) { }
 
+    /// <inheritdoc/>
     public async Task<IEnumerable<Product>> GetAllAsync(ProductType? productType = null)
     {
       using var connection = await _connectionFactory.CreateConnectionAsync();
@@ -25,6 +30,7 @@ namespace EShop.Repositories
       return await connection.QueryAsync<Product>(query, new { ProductType = (int?)productType });
     }
 
+    /// <inheritdoc/>
     public async Task<IEnumerable<Product>> GetListAsync(IEnumerable<int> productIds) {
       using var connection = await _connectionFactory.CreateConnectionAsync();
 
@@ -36,6 +42,7 @@ namespace EShop.Repositories
         new { Ids = productIds });
     }
 
+    /// <inheritdoc/>
     public async Task<int> CreateAsync(Product product)
     {
       using var connection = await _connectionFactory.CreateConnectionAsync();
@@ -49,6 +56,7 @@ namespace EShop.Repositories
       return product.Id;
     }
 
+    /// <inheritdoc/>
     public async Task UpdateAsync(Product product)
     {
       using var connection = await _connectionFactory.CreateConnectionAsync();
@@ -56,7 +64,6 @@ namespace EShop.Repositories
       await connection.ExecuteAsync(@"
         UPDATE Products
         SET Description = @Description,
-            Type = @Type,
             Price = @Price,
             IsPhysical = @IsPhysical,
             CoverUrl = @CoverUrl
@@ -64,6 +71,7 @@ namespace EShop.Repositories
         product);
     }
 
+    /// <inheritdoc/>
     public async Task DeleteByIdAsync(int id)
     {
       using var connection = await _connectionFactory.CreateConnectionAsync();

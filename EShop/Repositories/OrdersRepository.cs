@@ -5,10 +5,15 @@ using EShop.Repositories.Abstract;
 
 namespace EShop.Repositories
 {
+  /// <summary>
+  /// Manage information about orders.
+  /// </summary>
   public class OrdersRepository : RepositoryBase, IOrdersRepository
   {
+    /// <inheritdoc/>
     public OrdersRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory) { }
 
+    /// <inheritdoc/>
     public async Task CreateAsync(Order order)
     {
       using var connection = await _connectionFactory.CreateConnectionAsync();
@@ -38,6 +43,7 @@ namespace EShop.Repositories
 
     }
 
+    /// <inheritdoc/>
     public async Task<IEnumerable<Order>> GetAllAsync()
     {
       using var connection = await _connectionFactory.CreateConnectionAsync();
@@ -46,6 +52,7 @@ namespace EShop.Repositories
         "SELECT Id, TotalAmount, CustomerId FROM Orders");
     }
 
+    /// <inheritdoc/>
     public async Task<Order?> GetOrderWithProductsAsync(int id)
     {
       using var connection = await _connectionFactory.CreateConnectionAsync();

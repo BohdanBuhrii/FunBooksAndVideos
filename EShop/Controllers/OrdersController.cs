@@ -6,6 +6,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EShop.Controllers
 {
+  /// <summary>
+  /// Orders controller.
+  /// </summary>
   [ApiController]
   [Route("[controller]")]
   public class OrdersController : ControllerBase
@@ -15,6 +18,14 @@ namespace EShop.Controllers
     private readonly IOrdersRepository _ordersRepository;
     private readonly IOrderValidator _orderValidator;
 
+    /// <summary>
+    /// Initialize the <see cref="OrdersController"/>.
+    /// </summary>
+    /// <param name="orderProcessor">Order processor.</param>
+    /// <param name="productsRepository">Products repository.</param>
+    /// <param name="ordersRepository">Orders repository.</param>
+    /// <param name="orderValidator">Order validator.</param>
+    /// <exception cref="ArgumentNullException"></exception>
     public OrdersController(
       IPurchaseOrderProcessor orderProcessor,
       IProductsRepository productsRepository,
@@ -27,6 +38,11 @@ namespace EShop.Controllers
       _orderValidator = orderValidator ?? throw new ArgumentNullException(nameof(orderValidator));
     }
 
+    /// <summary>
+    /// Create purchase order.
+    /// </summary>
+    /// <param name="purchaseOrder">Order information.</param>
+    /// <returns>Order identifier.</returns>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(int))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -50,7 +66,25 @@ namespace EShop.Controllers
 
       return CreatedAtAction(nameof(GetOrder), new { id }, id);
     }
+    
+    /// <summary>
+    /// Get all orders. Does not include product info.
+    /// </summary>
+    /// <returns>List of orders.</returns>
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Order>))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Produces("application/json")]
+    public async Task<IActionResult> GetAll()
+    {
+      return Ok(await _ordersRepository.GetAllAsync());
+    }
 
+    /// <summary>
+    /// Get order by id.
+    /// </summary>
+    /// <param name="id">Order identifier.</param>
+    /// <returns>Order info with products.</returns>
     [HttpGet("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Order))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -63,6 +97,10 @@ namespace EShop.Controllers
       return order is null ? NotFound() : Ok(order);
     }
 
+    /// <summary>
+    /// Validate order and update ModelState.
+    /// </summary>
+    /// <param name="order">Order info.</param>
     private void ValidateOrder(Order order)
     {
       if (!_orderValidator.IsTotalAmoutValid(order))

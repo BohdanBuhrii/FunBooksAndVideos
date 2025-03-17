@@ -4,12 +4,22 @@ using EShop.Models;
 
 namespace EShop.Strategies
 {
+  /// <summary>
+  /// If the order contains membership, it is processed by this strategy.
+  /// </summary>
   public class MembershipStrategy : IPurchaseOrderStrategy
   {
     private readonly IMembershipsRepository _membershipsRepository;
     private readonly ICustomerMembershipsRepository _customerMembershipsRepository;
     private readonly ILogger _logger;
 
+    /// <summary>
+    /// Initialize the <see cref="MembershipStrategy"/>.
+    /// </summary>
+    /// <param name="membershipsRepository">Memberships repository.</param>
+    /// <param name="customerMembershipsRepository">Customer memberships repository.</param>
+    /// <param name="logger">Logger.</param>
+    /// <exception cref="ArgumentNullException"></exception>
     public MembershipStrategy(
       IMembershipsRepository membershipsRepository,
       ICustomerMembershipsRepository customerMembershipsRepository,
@@ -20,9 +30,15 @@ namespace EShop.Strategies
       _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>
+    /// Activate customer's membership.
+    /// </summary>
+    /// <param name="order">Order information.</param>
+    /// <returns>Task.</returns>
+    /// <exception cref="Exception"></exception>
     public async Task ApplyAsync(Order order)
     {
-      // I assume that there can be only one membership per user.
+      // I assume that there can be only one active membership per user.
       var purchasedMembership = order.Products.FirstOrDefault(x => x.Type == ProductType.Membership);
 
       if (purchasedMembership is null)
